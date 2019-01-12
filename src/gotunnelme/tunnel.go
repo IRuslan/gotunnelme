@@ -63,7 +63,12 @@ func (self *TunnelConn) Tunnel(replyCh chan<- int) error {
 	go func() {
 		var err error
 		for {
-			_, err = io.Copy(remoteConn, localConn)
+			var i int64
+			i, err = io.Copy(remoteConn, localConn)
+			if i == 0 {
+				time.Sleep(time.Duration(time.Millisecond * 100))
+			}
+
 			if err != nil {
 				if Debug {
 					fmt.Printf("Stop copy form local to remote! error=[%v]\n", err)
@@ -76,7 +81,12 @@ func (self *TunnelConn) Tunnel(replyCh chan<- int) error {
 	go func() {
 		var err error
 		for {
-			_, err = io.Copy(localConn, remoteConn)
+			var i int64
+			i, err = io.Copy(localConn, remoteConn)
+			if i == 0 {
+				time.Sleep(time.Duration(time.Millisecond * 100))
+			}
+
 			if err != nil {
 				if Debug {
 					fmt.Printf("Stop copy form remote to local! error=[%v]\n", err)
