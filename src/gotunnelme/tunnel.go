@@ -121,9 +121,9 @@ func (self *TunnelConn) connectRemote() (net.Conn, error) {
 		proxy = os.Getenv("http_proxy")
 	}
 	if len(proxy) > 0 {
-		url, err := url.Parse(proxy)
+		u, err := url.Parse(proxy)
 		if err == nil {
-			addr = url.Host
+			addr = u.Host
 		}
 	}
 	remoteConn, remoteErr := net.Dial("tcp", addr)
@@ -181,12 +181,12 @@ func (self *Tunnel) startTunnel() error {
 	if err := self.checkLocalPort(); err != nil {
 		return err
 	}
-	url, parseErr := url.Parse(localtunnelServer)
+	u, parseErr := url.Parse(localtunnelServer)
 	if parseErr != nil {
 		return parseErr
 	}
 	replyCh := make(chan int, self.assignedUrlInfo.MaxConnCount)
-	remoteHost := url.Host
+	remoteHost := u.Host
 	for i := 0; i < self.assignedUrlInfo.MaxConnCount; i++ {
 		tunnelConn := NewTunnelConn(remoteHost, self.assignedUrlInfo.Port, self.localPort)
 		self.tunnelConns[i] = tunnelConn
